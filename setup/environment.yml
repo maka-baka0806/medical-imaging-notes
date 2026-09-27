@@ -1,0 +1,41 @@
+# 科研环境定义（conda）
+# 用法：
+#   conda env create -f setup/environment.yml
+#   conda activate medimg
+#
+# 注：本机安装时使用清华镜像（见 setup/环境配置说明.md）。
+#     国内网络下创建前，建议先把 ~/.condarc 指向镜像。
+name: medimg
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.11          # 不用 3.12+：科研包对新版本支持滞后
+  - numpy
+  - scipy
+  - pandas
+  - matplotlib
+  - seaborn
+  - scikit-learn
+  - scikit-image
+  - jupyterlab
+  - ipykernel
+  - ipywidgets
+  - tqdm
+  - imageio
+  # ---- 医学影像 IO ----
+  - simpleitk
+  - pydicom
+  - nibabel
+  - pip
+  - pip:
+      # ---- 放射组学（PyPI 无 arm64 预编译包，需源码编译）----
+      - pyradiomics==3.0.1
+      # ---- 深度学习 ----
+      - torch
+      - torchvision
+      # ---- 3D 影像查看器 ----
+      - napari[all]
+      - itk
+      - opencv-python-headless

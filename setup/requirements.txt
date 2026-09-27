@@ -1,0 +1,47 @@
+# 顶层依赖清单（本机已验证版本，2026-09-27）
+# 完整依赖树（228 个包）见 requirements-full.txt
+#
+# 安装：
+#   pip install -r setup/requirements.txt
+
+# ---- 数值计算 ----
+numpy==2.4.6
+scipy==1.17.1
+pandas==3.0.6
+
+# ---- 可视化 ----
+matplotlib==3.11.2
+seaborn==0.13.2
+
+# ---- 机器学习 ----
+scikit-learn==1.9.1
+
+# ---- 图像处理 ----
+scikit-image==0.26.0
+opencv-python-headless
+
+# ---- 医学影像 IO ----
+SimpleITK==2.5.6
+pydicom==3.0.2
+nibabel==5.4.2
+itk
+
+# ---- 放射组学 ----
+# 注意：PyPI 无 macOS arm64 预编译包，需从源码编译：
+#   pip install setuptools wheel numpy PyWavelets six pykwalify versioneer
+#   pip install --no-build-isolation pyradiomics
+pyradiomics==3.0.1
+
+# ---- 深度学习 ----
+torch==2.14.0
+torchvision==0.29.0
+
+# ---- 交互环境与查看器 ----
+jupyterlab==4.6.4
+ipykernel
+ipywidgets
+napari[all]
+
+# ---- 工具 ----
+tqdm
+imageio

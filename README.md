@@ -74,16 +74,60 @@
 
 ## 环境与工具
 
-| 用途 | 工具 | 状态 |
-|---|---|---|
-| 语言 | Python 3.x | ✅ |
-| 版本管理 | Git + GitHub（SSH 认证） | ✅ |
-| 影像查看/勾画 | 3D Slicer / ITK-SNAP | ⬜ |
-| 放射组学 | PyRadiomics | ⬜ |
-| 深度学习 | PyTorch | ⬜ |
+**已配置完成**（详见 [setup/环境配置说明.md](setup/环境配置说明.md)）：
 
-> 💡 **本机网络备忘**：命令行工具（curl / git / pip）默认不走系统代理，在校园网下直连 GitHub 会超时。
-> 需要在终端显式设置：`export https_proxy=http://<你的代理>:<端口>`。
+| 用途 | 工具 | 版本 | 状态 |
+|---|---|---|---|
+| 包管理 | Miniconda（环境名 `medimg`） | conda 26.7.1 | ✅ |
+| 语言 | Python | 3.11.11 | ✅ |
+| 数值计算 | NumPy / SciPy / pandas | 2.4.6 / 1.17.1 / 3.0.6 | ✅ |
+| 可视化 | matplotlib / seaborn | 3.11.2 / 0.13.2 | ✅ |
+| 机器学习 | scikit-learn | 1.9.1 | ✅ |
+| 图像处理 | scikit-image / OpenCV | 0.26.0 / — | ✅ |
+| **医学影像 IO** | **SimpleITK / pydicom / nibabel / ITK** | 2.5.6 / 3.0.2 / 5.4.2 / — | ✅ |
+| **放射组学** | **PyRadiomics** | 3.0.1 | ✅ |
+| 深度学习 | PyTorch / torchvision | 2.14.0 / 0.29.0 | ✅ |
+| 交互环境 | JupyterLab | 4.6.4 | ✅ |
+| 3D 影像查看器 | napari | 0.9.1 | ✅ |
+| 阅片/勾画 | 3D Slicer | — | ⬜ 待手动安装 |
+| 版本管理 | Git + GitHub（SSH 免密） | 2.50.1 | ✅ |
+
+一键复现环境：
+
+```bash
+conda activate medimg                 # 激活
+python examples/01_radiomics_demo.py  # 跑第一个示例
+conda env create -f setup/environment.yml   # 在别的机器上重建
+```
+
+> 💡 **本机网络备忘（踩过的坑）**
+> - **命令行工具默认不走系统代理**：`git` / `curl` 直连 GitHub 会超时 → 需要 `export https_proxy=http://proxy-dku.oit.duke.edu:3128`
+> - **但 conda / pip 会自动读取系统代理**：走校园代理访问清华镜像会被 **403 拒绝** → 需要 `export no_proxy="*"`
+> - **一句话记住**：**镜像直连，GitHub 挂代理**。pip 与 conda 已永久指向清华镜像。
+
+---
+
+## 可运行示例
+
+| 脚本 | 内容 | 状态 |
+|---|---|---|
+| [examples/01_radiomics_demo.py](examples/01_radiomics_demo.py) | 合成体模 → 提取 107 个放射组学特征 → 用几何公式验证形状特征 | ✅ 已跑通 |
+
+`01_radiomics_demo.py` 的输出示例：
+
+```
+提取到 107 个特征
+── shape（14 个）      Elongation = 1.0000   Flatness = 1.0000
+── firstorder（18 个） 10Percentile = 86.61  90Percentile = 111.85
+── glcm（24 个）       Autocorrelation = 6.06
+── gldm（14 个）       DependenceEntropy = 4.73
+── glrlm（16 个）      GrayLevelNonUniformity = 267.30
+── glszm（16 个）      GrayLevelNonUniformity = 6.69
+── ngtdm（5 个）       Busyness = 21.79  Coarseness = 0.0044
+
+正确性检验：理论球体积 904.8 vs PyRadiomics 911.5（相对误差 0.74%）
+完美球体的 Elongation 与 Flatness 应等于 1.0 —— 实测正是 1.0000 ✅
+```
 
 ---
 
@@ -91,7 +135,9 @@
 
 | 日期 | 做了什么 | 遇到的问题 / 收获 |
 |---|---|---|
-| 2026-09-27 | 创建仓库、配置 SSH 免密推送、整理约 180 条术语 | GitHub 直连超时 → 查明是命令行不走系统代理，加代理后解决 |
+| 2026-09-27 | 创建仓库、配置 SSH 免密推送、整理 177 条术语 | GitHub 直连超时 → **查明是命令行不走系统代理**，加代理后解决 |
+| 2026-09-27 | 装 Miniconda + 建 `medimg` 环境 + 装 14 类科研包 | conda 自动读系统代理 → 访问清华镜像 **403** → 用 `no_proxy` 绕过；**PyRadiomics 无 arm64 预编译包，从源码编译成功** |
+| 2026-09-27 | 跑通第一个示例：合成体模特征提取 107 个 | 网格体积比理论值大 0.74%——体素化导致的正常误差 |
 
 ---
 
@@ -106,12 +152,19 @@
 
 ```
 medical-imaging-notes/
-├── README.md                 # 本文件：项目说明 + 术语索引 + 学习日志
-├── glossary/                 # 术语库（约 180 条，按主题分 4 个文件）
+├── README.md                 # 本文件：项目说明 + 术语索引 + 环境 + 学习日志
+├── glossary/                 # 术语库（177 条，按主题分 4 个文件）
 │   ├── 01-临床-影像-放疗.md
 │   ├── 02-放射组学-图像处理.md
 │   ├── 03-机器学习-统计-可解释性.md
 │   └── 04-工程-标准-代号-数据集.md
+├── examples/                 # 可运行示例
+│   └── 01_radiomics_demo.py
+├── setup/                    # 环境配置
+│   ├── 环境配置说明.md
+│   ├── environment.yml
+│   ├── requirements.txt
+│   └── requirements-full.txt
 └── .gitignore
 ```
 
