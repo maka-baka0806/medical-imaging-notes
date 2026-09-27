@@ -12,6 +12,7 @@ from core.modeling import (cv_predict, dissimilarity_select, fusion_experiment,
                            roc_points, vif_table)
 from core.survival import (risk_stratification_table, simulate_survival,
                            stratified_analysis)
+from core.capabilities import require
 
 CITE = """
 **对应文献**
@@ -47,12 +48,14 @@ def _roc_fig(curves: dict):
 
 
 def render() -> None:
-    st.title("📈 特征建模与预后")
+    if not require("sklearn", "特征建模与预后"):
+        return
+    st.title("特征建模与预后")
     st.markdown(
         "从**特征矩阵**到**临床结论**的完整链路：多共线性评估 → 降维/特征选择 → "
         "分类器 → 交叉验证 → 融合对比 → 生存分层。这就是杨老师多数论文的方法学骨架。"
     )
-    with st.expander("📄 对应文献"):
+    with st.expander(" 对应文献"):
         st.markdown(CITE)
 
     with st.sidebar:
@@ -67,7 +70,7 @@ def render() -> None:
                "特征分三源：手工放射组学 / 深度特征 / 临床信息。")
 
     tab1, tab2, tab3, tab4 = st.tabs(
-        ["🧹 特征质量", "🤖 模型与交叉验证", "🧬 三源融合", "⏳ 生存分析"])
+        [" 特征质量", " 模型与交叉验证", " 三源融合", "⏳ 生存分析"])
 
     # ---------------- 特征质量 ----------------
     with tab1:
@@ -122,7 +125,7 @@ def render() -> None:
     # ---------------- 三源融合 ----------------
     with tab3:
         st.markdown("**复现 MFC 论文的核心结论：多源融合是否优于单源？**")
-        if st.button("▶️ 运行融合对比实验", type="primary"):
+        if st.button(" 运行融合对比实验", type="primary"):
             with st.spinner("正在跑 7 种特征组合 × 交叉验证…"):
                 st.session_state["fusion"] = fusion_experiment(co, model=model, scheme="kfold")
         fdf = st.session_state.get("fusion")
@@ -137,7 +140,7 @@ def render() -> None:
             st.plotly_chart(fig, width="stretch")
             st.info("**深蓝 = 融合模型，浅蓝 = 单一来源。** "
                     "可以看到融合通常优于任何单一来源 —— 但边际收益会递减，"
-                    "这正是原论文要讨论的问题。", icon="🔑")
+"这正是原论文要讨论的问题。", icon="")
 
     # ---------------- 生存分析 ----------------
     with tab4:

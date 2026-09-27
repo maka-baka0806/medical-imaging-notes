@@ -68,7 +68,7 @@ def _save(data: dict) -> None:
 
 
 def render() -> None:
-    st.title("🎯 学习路线")
+    st.title(" 学习路线")
     st.markdown(
         "12 周可执行计划。每周只有**一个交付物**——不要贪多，做完一个再走下一步。"
         "进度保存在本地 `platform/data/progress.json`。"
@@ -82,7 +82,7 @@ def render() -> None:
     with c1:
         st.progress(done / total, text=f"已完成 {done} / {total} 周")
     with c2:
-        if st.button("🔄 重置进度"):
+        if st.button(" 重置进度"):
             _save({})
             st.rerun()
 
@@ -91,7 +91,7 @@ def render() -> None:
     for week, title, tasks, deliverable in WEEKS:
         key = f"week{week}"
         checked = bool(progress.get(key))
-        icon = "✅" if checked else "⬜"
+        icon = "" if checked else ""
         with st.expander(f"{icon} 第 {week} 周 · {title}", expanded=(week == done + 1)):
             st.markdown(f"**任务**：{tasks}")
             st.markdown(f"**数学同步**：{MATH_TASKS[week]}")
@@ -117,5 +117,5 @@ def render() -> None:
     st.info(
         "**关于节奏**：每周建议投入 数学 4h + 编程 8h + 领域阅读 3h + 复盘 1h。"
         "学期中做不到就砍数学时长，但**编程不要断**。",
-        icon="⏱️",
+        icon="⏱",
     )

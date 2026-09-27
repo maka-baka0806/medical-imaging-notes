@@ -7,7 +7,7 @@ import streamlit as st
 
 from core.env_check import check_tools, summary
 from core.glossary_parser import load_terms
-from core.theme import card, hero
+from core.theme import card, hero, section
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -62,7 +62,7 @@ def render() -> None:
     c3.metric("科研工具就绪", f"{ok}/{total}")
     c4.metric("仓库提交", commits if commits else "—")
 
-    st.markdown('<hr class="dku-rule">', unsafe_allow_html=True)
+    st.markdown("---")
     st.subheader("平台模块与文献映射")
     st.caption("每个模块都对应杨老师的具体论文，页面内附「对应文献」与核心结论解读。")
 
@@ -73,7 +73,7 @@ def render() -> None:
                 st.markdown(card(idx, title, body, src), unsafe_allow_html=True)
         st.write("")
 
-    st.markdown('<hr class="dku-rule">', unsafe_allow_html=True)
+    st.markdown("---")
 
     left, right = st.columns([1.15, 1])
     with left:
@@ -114,10 +114,10 @@ def render() -> None:
         st.info(
             "**所有计算都在本地完成**，影像数据不上传任何服务器 —— "
             "这对将来处理真实临床数据是硬要求。",
-            icon="🔒",
+            
         )
 
-    st.markdown('<hr class="dku-rule">', unsafe_allow_html=True)
+    st.markdown("---")
     st.caption(
         "仓库：[medical-imaging-notes](https://github.com/maka-baka0806/medical-imaging-notes)　·　"
         "环境：conda `medimg`（Python 3.11 · PyRadiomics · PyTorch · SimpleITK）　·　"

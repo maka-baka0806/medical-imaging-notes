@@ -18,7 +18,7 @@ def _slicer_installed() -> bool:
 
 
 def render() -> None:
-    st.title("🧰 工具与资源")
+    st.title(" 工具与资源")
 
     # ---------------- 环境状态 ----------------
     st.subheader("① 环境状态")
@@ -31,7 +31,7 @@ def render() -> None:
     c3.metric("Python", "3.11.11")
 
     df = pd.DataFrame([{
-        "状态": "✅" if t.ok else "⬜",
+"状态": "" if t.ok else "",
         "工具": t.label,
         "版本": t.version or "—",
         "类别": t.category,
@@ -46,10 +46,10 @@ def render() -> None:
             "2. 选 **macOS** → **Stable Release** → **Apple Silicon**\n"
             "3. 下载 `.dmg` → 把 Slicer 拖进 Applications\n"
             "4. 首次打开若被拦截：`系统设置 → 隐私与安全性 → 仍要打开`",
-            icon="📥",
+            
         )
     else:
-        st.success("3D Slicer 已安装 ✅")
+        st.success("3D Slicer 已安装 ")
 
     st.divider()
 

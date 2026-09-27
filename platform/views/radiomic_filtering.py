@@ -11,6 +11,7 @@ import streamlit as st
 from core.filtering import (FEATURE_LABELS, make_lung_phantom, radiomic_filtering,
                             rank_features, spearman_map_vs_reference)
 from core.plotting import setup_cjk_font
+from core.capabilities import require
 
 setup_cjk_font()
 
@@ -49,13 +50,15 @@ def _show(ph, res, key, slice_idx=32, cmap="inferno"):
 
 
 def render() -> None:
-    st.title("🧬 体素级放射组学滤波")
+    if not require("scipy", "体素级放射组学滤波"):
+        return
+    st.title("体素级放射组学滤波")
     st.markdown(
         "传统放射组学把整个器官压成**一个特征向量**；本方法让 3D 滑窗逐体素滑动，"
         "每个特征变成一张**与 CT 同尺寸的特征图**——从而获得空间分辨能力。"
         "**这是杨老师最具代表性的方法之一。**"
     )
-    with st.expander("📄 对应文献"):
+    with st.expander(" 对应文献"):
         st.markdown(CITE)
 
     c1, c2, c3, c4 = st.columns(4)
@@ -72,7 +75,7 @@ def render() -> None:
         f"与参考通气图做体素级 Spearman 相关"
     )
 
-    tab1, tab2, tab3 = st.tabs(["🗺️ 特征图可视化", "🏆 相关性排行榜", "🎛️ 核大小敏感性"])
+    tab1, tab2, tab3 = st.tabs([" 特征图可视化", " 相关性排行榜", " 核大小敏感性"])
 
     with tab1:
         keys = list(res.maps.keys())
@@ -93,7 +96,7 @@ def render() -> None:
             "**关键发现（与原论文一致）**：纹理类特征与通气显著相关，"
             "而**局部均值（纯强度）几乎不相关** —— 这正说明为什么"
             "「只看 HU 阈值」的方法不如放射组学滤波。",
-            icon="🔑",
+            
         )
 
     with tab3:

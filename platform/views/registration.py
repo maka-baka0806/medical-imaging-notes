@@ -13,6 +13,7 @@ from core.plotting import setup_cjk_font
 from core.registration import (METHODS, evaluate_registration, folding_stats,
                                jacobian_determinant, make_registration_case,
                                register)
+from core.capabilities import require
 
 setup_cjk_font()
 
@@ -36,12 +37,16 @@ def _register(size, magnitude, seed, method, iters):
 
 
 def render() -> None:
-    st.title("🫀 形变配准与物理合理性")
+    if not require("SimpleITK", "形变配准与物理合理性"):
+        return
+    if not require("scipy", "形变配准与物理合理性"):
+        return
+    st.title("形变配准与物理合理性")
     st.markdown(
         "把治疗前影像与治疗中影像对齐。难点不是「对齐」，而是"
         "**对齐得是否物理合理** —— 器官不能被算法随意拉扯、折叠。"
     )
-    with st.expander("📄 对应文献"):
+    with st.expander(" 对应文献"):
         st.markdown(CITE)
 
     c1, c2, c3, c4 = st.columns(4)
@@ -123,5 +128,5 @@ def render() -> None:
         "纯图像相似度驱动的配准容易产生「看起来像、但物理上不可能」的形变。"
         "杨老师团队的做法是：用有限元仿真生成生物力学合理的形变作为监督信号，"
         "再用网络把它加速到毫秒级（原论文：10 分钟 → 103 毫秒）。",
-        icon="💡",
+        
     )

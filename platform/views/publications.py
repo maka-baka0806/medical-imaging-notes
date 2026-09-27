@@ -9,8 +9,8 @@ import streamlit as st
 from core.publications import EARLY_PHYSICS, PUBLICATIONS, TOPICS, stats
 from core.theme import DUKE_ACCENT, DUKE_BLUE
 
-POS_LABEL = {"★": "★ 第一作者", "☆": "☆ 通讯/末位（导师位）",
-             "○": "○ 合作者", "—": "— 项目/学位论文"}
+POS_LABEL = {"": " 第一作者", "": " 通讯/末位（导师位）",
+"": " 合作者", "—": "— 项目/学位论文"}
 
 
 def _records_to_df(records: list[dict]) -> pd.DataFrame:
@@ -28,7 +28,7 @@ def _records_to_df(records: list[dict]) -> pd.DataFrame:
 
 
 def render() -> None:
-    st.title("📚 文献收藏 · 杨振宇老师专藏")
+    st.title(" 文献收藏 · 杨振宇老师专藏")
     st.markdown(
         "已核实归属的**全部公开成果**（已排除同名研究者）。"
         "每条都标注了**作者位次**、**核心发现**与**平台对应复现模块**。"
@@ -43,7 +43,7 @@ def render() -> None:
     c5.metric("平台有复现", s["有复现"])
 
     tab1, tab2, tab3, tab4 = st.tabs(
-        ["📇 全部文献", "📊 统计与趋势", "🧩 按技术线", "🔬 早期物理研究"])
+        [" 全部文献", " 统计与趋势", " 按技术线", " 早期物理研究"])
 
     # ---------------- 全部文献 ----------------
     with tab1:
@@ -64,7 +64,7 @@ def render() -> None:
                 continue
             if pick_topics and not set(pick_topics) & set(p["topic"]):
                 continue
-            if only_repl and not p["replicate"].startswith("✅"):
+            if only_repl and not p["replicate"].startswith(""):
                 continue
             if kw and kw.lower() not in (p["title"] + p["finding"] + p["journal"]).lower():
                 continue
@@ -84,12 +84,12 @@ def render() -> None:
                 )
                 st.markdown(f"**主题**：{'、'.join(p['topic'])}")
                 st.markdown(f"**核心发现**：{p['finding']}")
-                st.info(f"**平台复现**：{p['replicate']}", icon="🧪")
+                st.info(f"**平台复现**：{p['replicate']}", icon="")
 
         if rows:
             buf = io.StringIO()
             df.to_csv(buf, index=False)
-            st.download_button("⬇️ 导出当前筛选结果（CSV）",
+            st.download_button(" 导出当前筛选结果（CSV）",
                                buf.getvalue().encode("utf-8-sig"),
                                file_name="yang_zhenyu_publications.csv", mime="text/csv")
 
@@ -111,7 +111,7 @@ def render() -> None:
             "**从位次变化能读出什么**：2024 年以前他基本是第一作者（自己动手做）；"
             "2024 年起越来越多**末位/通讯**（带学生做）—— 张日辉、王兰纳、张泽宇、戴晓仪等。"
             "这说明他现在需要能干活的学生。",
-            icon="📌",
+            
         )
 
     # ---------------- 按技术线 ----------------
@@ -137,11 +137,11 @@ def render() -> None:
             hits = [p for p in PUBLICATIONS
                     if any(k.lower() in (p["title"] + p["finding"] + p["journal"]).lower()
                            for k in keys)]
-            n_repl = sum(1 for p in hits if p["replicate"].startswith("✅"))
+            n_repl = sum(1 for p in hits if p["replicate"].startswith(""))
             with st.expander(f"{line}　（{len(hits)} 篇，其中 {n_repl} 篇平台可复现）",
                              expanded=len(hits) > 0 and line.startswith("②")):
                 for p in sorted(hits, key=lambda x: -x["year"]):
-                    mark = "🧪" if p["replicate"].startswith("✅") else "　"
+                    mark = "" if p["replicate"].startswith("") else "　"
                     st.markdown(f"{mark} **{p['year']}** {p['title'][:80]}　"
                                 f"<span style='color:#5A6472;font-size:0.85rem'>"
                                 f"{p['journal']}</span>", unsafe_allow_html=True)
@@ -174,7 +174,7 @@ def render() -> None:
                 "**反直觉现象 → 可控模型 → 定量解释**，这是他科研思维的底色。"
             )
 
-    st.markdown('<hr class="dku-rule">', unsafe_allow_html=True)
+    st.markdown("---")
     st.caption(
         "收录范围：同行评议期刊论文、预印本、会议摘要、学位论文与科研项目。"
         "已通过单位与课题组交叉核对排除同名研究者（如杜克 BME 的另一位 Zhenyu Yang）。"

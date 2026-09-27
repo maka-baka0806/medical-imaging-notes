@@ -12,6 +12,7 @@ import streamlit as st
 from core.dosimetry import (dvh_curve, gamma_index, make_simt_case, simt_metrics,
                             sphere_feature_vector, spherical_projection)
 from core.plotting import setup_cjk_font
+from core.capabilities import require
 
 setup_cjk_font()
 
@@ -29,12 +30,16 @@ def _case(n_targets, seed, prescription):
 
 
 def render() -> None:
-    st.title("☢️ 放疗剂量学工具")
+    if not require("scipy", "放疗剂量学工具"):
+        return
+    if not require("plotly", "放疗剂量学工具"):
+        return
+    st.title("放疗剂量学工具")
     st.markdown(
         "放疗研究离不开三件工具：**DVH 剂量指标**、**Gamma 指数验证**、"
         "以及杨老师 SCNN 论文的独门变换——**球形投影**。"
     )
-    with st.expander("📄 对应文献"):
+    with st.expander(" 对应文献"):
         st.markdown(CITE)
 
     c1, c2, c3 = st.columns(3)
@@ -43,7 +48,7 @@ def render() -> None:
     seed = c3.number_input("随机种子", 0, 99, 2)
 
     case = _case(int(n_t), int(seed), float(pres))
-    tab1, tab2, tab3 = st.tabs(["📊 DVH 与剂量指标", "✅ Gamma 指数", "🌐 球形投影"])
+    tab1, tab2, tab3 = st.tabs([" DVH 与剂量指标", " Gamma 指数", " 球形投影"])
 
     # ---------------- DVH ----------------
     with tab1:
@@ -159,5 +164,5 @@ def render() -> None:
             "**为什么这样能省算力？** 3D 卷积的参数量随体积增长，而球面图是固定大小的 2D 图像；"
             "同时球坐标天然匹配「脑近似球形」这一几何先验 —— "
             "这正是杨老师偏爱的「把几何结构显式写进模型」的思路。",
-            icon="💡",
+            
         )

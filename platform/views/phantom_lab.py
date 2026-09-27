@@ -12,6 +12,7 @@ import streamlit as st
 from core.phantom import (FEATURE_FAMILIES, extract_features, group_features,
                           make_sphere_phantom, to_sitk)
 from core.plotting import setup_cjk_font
+from core.capabilities import require
 
 setup_cjk_font()   # 让图中中文正常显示
 
@@ -57,13 +58,17 @@ def _features(radius: int, noise: float, tissue: float, shape: str,
 
 
 def render() -> None:
-    st.title("🧪 体模实验台")
+    if not require("radiomics", "体模实验台"):
+        return
+    if not require("plotly", "体模实验台"):
+        return
+    st.title("体模实验台")
     st.markdown(
         "在一个**答案已知**的合成病灶上做实验：拖动滑杆，实时观察 107 个放射组学特征"
         "如何随之改变。**这是理解「特征到底在测什么」最快的途径。**"
     )
 
-    tab1, tab2 = st.tabs(["🎛️ 单点实验", "📈 参数敏感性扫描"])
+    tab1, tab2 = st.tabs([" 单点实验", " 参数敏感性扫描"])
 
     # ============================================================
     # 单点实验
@@ -111,7 +116,7 @@ def render() -> None:
                          width="stretch", height=420)
 
         st.divider()
-        st.markdown("#### 🤔 试试看：这几个问题你能答上来吗？")
+        st.markdown("####  试试看：这几个问题你能答上来吗？")
         q1, q2 = st.columns(2)
         with q1:
             st.markdown(
@@ -153,7 +158,7 @@ def render() -> None:
             fixed = dict(radius=8, noise=10.0, shape="sphere")
             xlabel = "组织密度（HU）"
 
-        if st.button("▶️ 开始扫描", type="primary"):
+        if st.button(" 开始扫描", type="primary"):
             curves: dict[str, list[float]] = {k: [] for k in WATCH_FEATURES}
             progress = st.progress(0.0, text="计算中…")
             for i, v in enumerate(values):
@@ -225,5 +230,5 @@ def render() -> None:
             st.info(
                 "**读数提示**：曲线平坦 = 该特征对参数不敏感（稳健）；曲线陡峭 = 敏感（不可靠）。"
                 "临床研究要挑**稳健**的特征，否则换台机器结论就翻了。",
-                icon="📌",
+                
             )

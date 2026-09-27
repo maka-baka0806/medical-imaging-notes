@@ -12,6 +12,7 @@ from core.plotting import setup_cjk_font
 from core.segmentation import (METHODS, evaluate, make_lesion_phantom,
                                perturbation_uncertainty, segment,
                                uncertainty_groups, uncertainty_vs_error)
+from core.capabilities import require
 
 setup_cjk_font()
 
@@ -61,12 +62,18 @@ def _panel(ph, pred, uq=None, sl=28):
 
 
 def render() -> None:
-    st.title("🎯 分割与不确定性量化")
+    if not require("skimage", "分割与不确定性"):
+        return
+    if not require("sklearn", "分割与不确定性"):
+        return
+    if not require("scipy", "分割与不确定性"):
+        return
+    st.title("分割与不确定性量化")
     st.markdown(
         "分割 = 给每个体素贴标签。但**模型什么时候会错？** 这是杨老师当前最核心的方向："
         "让模型同时输出「结论」和「可信度」。"
     )
-    with st.expander("📄 对应文献"):
+    with st.expander(" 对应文献"):
         st.markdown(CITE)
 
     with st.sidebar:
@@ -77,7 +84,7 @@ def render() -> None:
         st.caption("不均匀度越高，全局阈值法越容易失效 —— 这正是真实临床的困难。")
 
     ph = _phantom(int(contrast), int(noise), float(bias), 0)
-    tab1, tab2 = st.tabs(["🔬 七种分割算法对比", "📉 不确定性量化"])
+    tab1, tab2 = st.tabs([" 七种分割算法对比", " 不确定性量化"])
 
     # ---------------- 算法对比 ----------------
     with tab1:
@@ -99,7 +106,7 @@ def render() -> None:
         with c2:
             st.metric("最差算法", f"{df.iloc[-1]['算法']}（Dice {df.iloc[-1]['Dice']:.3f}）")
         st.bar_chart(df.set_index("算法")["Dice"])
-        st.caption("⚠️ 所有算法都在**器官 ROI 内**分割 —— 不限制 ROI 是初学者最常见的错误。")
+        st.caption(" 所有算法都在**器官 ROI 内**分割 —— 不限制 ROI 是初学者最常见的错误。")
         _panel(ph, _seg(ph.image, ph.organ, best))
 
     # ---------------- 不确定性 ----------------
@@ -144,5 +151,5 @@ def render() -> None:
             "**这就是 SPU-Net 的全部思想**：用不同的「视角」得到多组预测，"
             "分歧越大越不可信；再把这些预测聚合起来，结果往往比任何单次预测都准。"
             "原论文用**球面投影**制造视角，这里用旋转 + 加噪模拟同一机制。",
-            icon="💡",
+            
         )

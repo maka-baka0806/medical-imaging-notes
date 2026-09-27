@@ -12,9 +12,9 @@ DIFF_LABEL = {
     "L3": "L3 · 得动手做过才真懂",
 }
 EVID_LABEL = {
-    "✅": "✅ 论文明确写明使用",
-    "🔶": "🔶 作为对比方法/参考文献出现",
-    "⚪": "⚪ 领域通用但论文未记载",
+"": " 论文明确写明使用",
+"": " 作为对比方法/参考文献出现",
+"": " 领域通用但论文未记载",
 }
 
 
@@ -32,7 +32,7 @@ def _terms():
 
 
 def render() -> None:
-    st.title("📚 术语库")
+    st.title(" 术语库")
     terms = _terms()
 
     if not terms:
@@ -69,7 +69,7 @@ def render() -> None:
     st.caption(f"共 {len(terms)} 条术语，当前筛选出 **{len(result)}** 条")
 
     # ---------------- 统计图 ----------------
-    tab1, tab2, tab3 = st.tabs(["📖 词条", "📊 分布统计", "🔀 易混淆对照"])
+    tab1, tab2, tab3 = st.tabs([" 词条", " 分布统计", " 易混淆对照"])
 
     with tab1:
         if not result:
@@ -104,7 +104,7 @@ def render() -> None:
 
             st.markdown("**下载当前筛选结果（CSV）**")
             st.download_button(
-                "⬇️ 下载 CSV",
+" 下载 CSV",
                 df[["term", "difficulty", "evidence", "definition"]]
                   .to_csv(index=False).encode("utf-8-sig"),
                 file_name="glossary_selection.csv",

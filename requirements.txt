@@ -1,0 +1,14 @@
+# 云端部署依赖（Streamlit Community Cloud 会自动读取）
+# 说明：PyRadiomics 需从源码编译（依赖 C 编译器），云端通常不可用，
+#       因此未列入；平台会在缺失时自动降级并在相关页面给出提示。
+streamlit>=1.40
+numpy
+scipy
+pandas
+matplotlib
+scikit-learn
+scikit-image
+plotly
+SimpleITK
+pydicom
+nibabel

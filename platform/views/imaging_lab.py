@@ -13,6 +13,7 @@ import streamlit as st
 from core.phantom import (FEATURE_FAMILIES, extract_features, group_features,
                           make_sphere_phantom, slice_view, to_records, to_sitk)
 from core.plotting import setup_cjk_font
+from core.capabilities import require
 
 setup_cjk_font()   # 让图中中文正常显示
 
@@ -50,7 +51,11 @@ def _show_slice(volume: np.ndarray, mask: np.ndarray | None, axis: int, index: i
 
 
 def render() -> None:
-    st.title("🔬 影像实验室")
+    if not require("radiomics", "影像实验室"):
+        return
+    if not require("SimpleITK", "影像实验室"):
+        return
+    st.title("影像实验室")
     st.markdown(
         "完整走一遍放射组学流程：**影像 → 分割（勾画 ROI）→ 特征提取 → 导出**。"
         "这是所有放射组学论文的骨架。"
@@ -133,7 +138,7 @@ def render() -> None:
         "换一个值，纹理特征就会变 —— 这正是 2024 年那篇 PET 离散化论文要回答的问题。"
     )
 
-    if st.button("🚀 开始提取特征", type="primary"):
+    if st.button(" 开始提取特征", type="primary"):
         with st.spinner("PyRadiomics 正在计算…"):
             feats = _extract(volume, mask, tuple(spacing), float(bin_width))
         st.session_state["feats"] = feats
@@ -141,7 +146,7 @@ def render() -> None:
     feats = st.session_state.get("feats")
     if feats:
         grouped = group_features(feats)
-        st.success(f"✅ 提取完成：共 **{len(feats)}** 个特征，覆盖 {len(grouped)} 个特征家族")
+        st.success(f" 提取完成：共 **{len(feats)}** 个特征，覆盖 {len(grouped)} 个特征家族")
 
         c1, c2 = st.columns([1, 1])
         with c1:
@@ -167,11 +172,11 @@ def render() -> None:
         df = pd.DataFrame(to_records(feats))
         buf = io.StringIO()
         df.to_csv(buf, index=False)
-        st.download_button("⬇️ 导出全部特征（CSV）", buf.getvalue().encode("utf-8-sig"),
+        st.download_button(" 导出全部特征（CSV）", buf.getvalue().encode("utf-8-sig"),
                            file_name="radiomics_features.csv", mime="text/csv")
 
         st.info(
             "**下一步**：把 binWidth 从 25 改成 10 或 50，重新提取，对比同一特征的变化 —— "
             "你会亲眼看到「特征稳健性」问题的来源。",
-            icon="💡",
+            
         )

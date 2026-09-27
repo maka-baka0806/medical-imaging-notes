@@ -11,7 +11,9 @@ import streamlit as st
 
 from core.plotting import setup_cjk_font
 from core.replication import PAPERS, get_paper
-from core.theme import DUKE_ACCENT, DUKE_BLUE, card
+from core.theme import ACCENT as DUKE_ACCENT, PRIMARY as DUKE_BLUE
+from core.theme import paper_block, step_marker
+from core.capabilities import require
 
 setup_cjk_font()
 
@@ -168,7 +170,9 @@ def _render_payload(kind: str, payload) -> None:
 
 
 def render() -> None:
-    st.title("🔬 文献复现专栏")
+    if not require("scipy", "文献复现专栏"):
+        return
+    st.title("文献复现专栏")
     st.markdown(
         "把杨老师论文的方法学**拆成可逐步执行的步骤**，每一步都能单独运行、单独看结果。"
         "所有步骤都用合成数据（真实临床数据需申请），因此复现的是**方法学与结论方向**。"
@@ -188,12 +192,8 @@ def render() -> None:
 
     # ---- 文献信息卡 ----
     st.markdown(
-        f'<div class="dku-card"><span class="idx">{paper.id}</span>'
-        f'<h4>{paper.name}</h4>'
-        f'<p><b>{paper.journal}</b>　·　{paper.position}'
-        + (f'　·　<a href="https://doi.org/{paper.doi}" target="_blank">DOI</a>' if paper.doi else "")
-        + f'</p><p style="margin-top:10px"><b>复现目标：</b>{paper.goal}</p>'
-        f'<p style="margin-top:8px"><b>⚠️ 与原论文的差异：</b>{paper.difference}</p></div>',
+        paper_block([paper.id, paper.position], paper.name,
+                    paper.goal, paper.difference),
         unsafe_allow_html=True,
     )
 
@@ -202,7 +202,7 @@ def render() -> None:
     st.progress(done / n, text=f"复现进度：{done} / {n} 步")
 
     c1, c2, c3, c4 = st.columns([1, 1, 1, 3])
-    if c1.button("▶️ 运行下一步", type="primary", disabled=done >= n):
+    if c1.button(" 运行下一步", type="primary", disabled=done >= n):
         step = paper.steps[done]
         with st.spinner(f"正在执行：{step.title}"):
             try:
@@ -212,7 +212,7 @@ def render() -> None:
                 st.rerun()
             except Exception as e:
                 st.error(f"第 {done+1} 步执行失败：{type(e).__name__}: {e}")
-    if c2.button("⏭️ 运行全部", disabled=done >= n):
+    if c2.button("⏭ 运行全部", disabled=done >= n):
         for i in range(done, n):
             step = paper.steps[i]
             try:
@@ -223,7 +223,7 @@ def render() -> None:
                 st.error(f"第 {i+1} 步失败：{type(e).__name__}: {e}")
                 break
         st.rerun()
-    if c3.button("🔄 重置"):
+    if c3.button(" 重置"):
         st.session_state[state_key] = {"__step__": 0}
         st.rerun()
 
@@ -233,20 +233,20 @@ def render() -> None:
     results = state.get("__results__", {})
     for i, step in enumerate(paper.steps):
         finished = i in results
-        icon = "✅" if finished else ("🔵" if i == done else "⬜")
-        with st.expander(f"{icon} {step.title}", expanded=finished and i == done - 1):
+        state = "done" if finished else ("now" if i == done else "todo")
+        with st.expander(step.title, expanded=finished and i == done - 1):
             st.markdown(step.detail)
             if finished:
                 kind, payload = results[i]
                 _render_payload(kind, payload)
                 if step.note:
-                    st.caption(f"💡 {step.note}")
+                    st.caption(f" {step.note}")
             else:
                 st.caption("尚未运行 —— 点上方「运行下一步」。")
 
     # ---- 复现结果可视化 ----
     if done > 0:
-        st.markdown('<hr class="dku-rule">', unsafe_allow_html=True)
+        st.markdown("---")
         st.subheader("复现结果可视化")
         try:
             _viz(paper.id, state)
@@ -254,6 +254,6 @@ def render() -> None:
             st.caption(f"（可视化暂不可用：{type(e).__name__}）")
 
     if done == n:
-        st.success(f"🎉 R{paper.id[1]} 全部 {n} 步复现完成", icon="✅")
+        st.success(f" R{paper.id[1]} 全部 {n} 步复现完成", icon="")
         if paper.conclusion:
             st.markdown(paper.conclusion)
