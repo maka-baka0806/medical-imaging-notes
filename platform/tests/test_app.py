@@ -27,7 +27,9 @@ os.chdir(PLATFORM)
 
 from streamlit.testing.v1 import AppTest  # noqa: E402
 
-VIEWS = ["home", "glossary", "imaging_lab", "phantom_lab", "roadmap", "toolbox"]
+VIEWS = ["home", "radiomic_filtering", "segmentation_uq", "modeling_survival",
+         "dosimetry_tools", "registration", "glossary", "imaging_lab",
+         "phantom_lab", "roadmap", "toolbox"]
 TMP = Path("/tmp/dsh_platform_tests")
 TMP.mkdir(exist_ok=True)
 

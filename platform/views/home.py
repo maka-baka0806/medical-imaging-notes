@@ -1,4 +1,4 @@
-"""概览页：平台首页。"""
+"""概览页：Duke 风格首屏 + 文献映射。"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -7,8 +7,28 @@ import streamlit as st
 
 from core.env_check import check_tools, summary
 from core.glossary_parser import load_terms
+from core.theme import card, hero
 
 REPO = Path(__file__).resolve().parents[2]
+
+MODULES = [
+    ("01", "体素级放射组学滤波", "3D 滑窗逐体素算特征，把「一个数」变成「一张图」，"
+     "并与参考通气图做体素级相关分析。", "Med Phys 2022 · arXiv:2503.23898（肺通气）"),
+    ("02", "分割与不确定性", "七种分割算法同台对比 + 多视角扰动不确定性；"
+     "检验「高不确定区是否真的更易出错」。", "Med Phys 2024/2026 · Front Oncol 2025（SPU-Net）"),
+    ("03", "特征建模与预后", "多共线性评估 → PCA/差异性选择 → LR/SVM/RF → 交叉验证 → "
+     "三源融合 → Kaplan-Meier 生存分层。", "Front Oncol 2023（MFC）· 2024（双放射组学）"),
+    ("04", "放疗剂量学工具", "DVH 与剂量指标（D2cc/V10Gy）、Gamma 指数（3%/2mm）、"
+     "以及 SCNN 的球形投影变换。", "Med Phys 2025（SIMT）· Front Oncol 2022（HDR DVH）"),
+    ("05", "形变配准与物理合理性", "SimpleITK 形变配准 + DVF + Jacobian 行列式，"
+     "判断形变是否物理合理（组织不能自我折叠）。", "Phys Imaging Radiat Oncol 2026（PhysMorph）"),
+    ("06", "影像实验室", "上传自己的 NIfTI 影像，走完整的「分割 → 提取 107 个特征 → 导出 CSV」流程。",
+     "通用流程（放射组学标准工作流）"),
+    ("07", "体模实验台", "拖动滑杆改变病灶参数，实时观察特征如何变化；"
+     "参数敏感性扫描输出排行榜。", "对应「特征稳健性」系列研究"),
+    ("08", "术语库 · 学习路线 · 工具链", "177 条术语可搜索；12 周计划可勾选；"
+     "环境自检与启动命令。", "——"),
+]
 
 
 def _git_commits() -> int | None:
@@ -22,89 +42,78 @@ def _git_commits() -> int | None:
 
 
 def render() -> None:
-    st.title("🧠 医学影像 AI 学习平台")
     st.markdown(
-        "把**术语库**、**影像实验室**、**体模实验台**、**学习路线**和**工具链**"
-        "整合在一个界面上 —— 从看懂一个名词，到亲手提取一次放射组学特征。"
+        hero("Duke Kunshan University · Medical Physics",
+             "医学影像 AI 学习平台",
+             "依据杨振宇老师已发表工作构建：从看懂一个名词，到亲手复现他课题组的主流方法。"),
+        unsafe_allow_html=True,
     )
 
-    # ---------- 关键指标 ----------
     terms = load_terms()
     tools = check_tools()
     ok, total = summary(tools)
     commits = _git_commits()
 
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("术语库词条", f"{len(terms)}", help="来自 glossary/ 目录，可全文搜索")
-    c2.metric("科研工具就绪", f"{ok}/{total}", help="环境自检结果，详见「工具与资源」")
-    c3.metric("平台页面", "6", help="概览 / 术语库 / 影像实验室 / 体模实验台 / 学习路线 / 工具与资源")
-    c4.metric("仓库提交", commits if commits else "—", help="git rev-list --count HEAD")
+    c1.metric("复现模块", "5", help="对应他五条主要技术线")
+    c2.metric("术语库", f"{len(terms)} 条", help="可全文搜索")
+    c3.metric("科研工具就绪", f"{ok}/{total}")
+    c4.metric("仓库提交", commits if commits else "—")
 
-    st.divider()
+    st.markdown('<hr class="dku-rule">', unsafe_allow_html=True)
+    st.subheader("平台模块与文献映射")
+    st.caption("每个模块都对应杨老师的具体论文，页面内附「对应文献」与核心结论解读。")
 
-    # ---------- 快速入口 ----------
-    st.subheader("从这里开始")
-    a, b, c = st.columns(3)
-    with a:
+    for row_start in range(0, len(MODULES), 3):
+        cols = st.columns(3)
+        for col, (idx, title, body, src) in zip(cols, MODULES[row_start:row_start + 3]):
+            with col:
+                st.markdown(card(idx, title, body, src), unsafe_allow_html=True)
+        st.write("")
+
+    st.markdown('<hr class="dku-rule">', unsafe_allow_html=True)
+
+    left, right = st.columns([1.15, 1])
+    with left:
+        st.subheader("这个平台覆盖了他工作的哪些部分")
         st.markdown(
-            "#### 📚 术语库\n"
-            "177 条医学影像 AI 名词，支持中英文搜索、按难度与主题筛选。\n\n"
-            "**建议**：先只看 `L1` 的条目，看懂 80% 再往下。"
-        )
-    with b:
-        st.markdown(
-            "#### 🧪 体模实验台\n"
-            "拖动滑杆改变病灶大小、噪声、密度，**实时看放射组学特征怎么变**。\n\n"
-            "**这是理解「特征在测什么」最快的方式。**"
-        )
-    with c:
-        st.markdown(
-            "#### 🔬 影像实验室\n"
-            "载入体模或上传 NIfTI 影像 → 选阈值分割 → 提取 107 个特征 → 导出 CSV。\n\n"
-            "**这就是真实放射组学研究的第一步。**"
-        )
-
-    st.divider()
-
-    # ---------- 环境状态 ----------
-    st.subheader("环境状态")
-    bad = [t for t in tools if not t.ok]
-    if not bad:
-        st.success(f"✅ 全部 {total} 项科研工具已就绪（Python 3.11 · conda 环境 medimg）")
-    else:
-        st.warning("以下工具尚未就绪：" + "、".join(t.label for t in bad))
-
-    cols = st.columns(3)
-    order = ["数值计算", "可视化", "机器学习", "图像处理", "医学影像", "放射组学", "深度学习", "查看器", "平台"]
-    for i, cat in enumerate(order):
-        items = [t for t in tools if t.category == cat]
-        if not items:
-            continue
-        with cols[i % 3]:
-            st.markdown(f"**{cat}**")
-            for t in items:
-                mark = "✅" if t.ok else "⬜"
-                st.caption(f"{mark} {t.label} {t.version}")
-
-    st.divider()
-
-    # ---------- 学习闭环 ----------
-    st.subheader("学习闭环：这个平台怎么用")
-    st.markdown(
-        """
-| 步骤 | 在哪做 | 你会得到什么 |
+            """
+| 技术线 | 代表工作 | 平台模块 |
 |---|---|---|
-| 1. 建立词汇量 | **术语库** | 看懂论文里的每个名词 |
-| 2. 建立直觉 | **体模实验台** | 知道每个特征对什么敏感 |
-| 3. 走通流程 | **影像实验室** | 一份可导出的特征表 |
-| 4. 按计划推进 | **学习路线** | 12 周的可勾选清单 |
-| 5. 环境与工具 | **工具与资源** | 启动命令与参考链接 |
-        """
-    )
+| 体素级放射组学 | Med Phys 2022 肺通气 | 🧬 放射组学滤波 |
+| 不确定性量化 | Med Phys 2024/2026、国自然青年项目 | 🎯 分割与不确定性 |
+| 多源特征融合 | Front Oncol 2023 MFC、2024 双放射组学 | 📈 特征建模与预后 |
+| 放疗剂量学 | Med Phys 2025 SIMT、Front Oncol 2022 DVH | ☢️ 剂量学工具 |
+| 形变配准 | Phys Imaging Radiat Oncol 2026 PhysMorph | 🫀 形变配准 |
+| 可解释 AI | 科学通报 2025 综述 | 📈 置换重要性 · 🎯 不确定性图 |
+| 时序建模（4DCT） | arXiv:2503.23898 | 🧬 特征序列分析（规划中） |
 
-    st.info(
-        "**配套仓库**：[medical-imaging-notes]"
-        "(https://github.com/maka-baka0806/medical-imaging-notes) —— "
-        "术语库、示例脚本、环境配置都在这份仓库里持续更新。",
-        icon="📦",
+> **尚未覆盖**：Neural ODE / HBNODE 决策轨迹可视化、球面卷积网络的完整训练、
+> 影像基因组学融合 —— 需要预训练模型或真实基因组数据，平台预留了扩展位。
+            """
+        )
+    with right:
+        st.subheader("建议使用顺序")
+        st.markdown(
+            """
+1. **📚 术语库** —— 先建立词汇量，只看 `L1` 条目
+2. **🧪 体模实验台** —— 建立「特征对什么敏感」的直觉
+3. **🧬 放射组学滤波** —— 理解他最具代表性的方法
+4. **🎯 分割与不确定性** —— 理解他当前的核心方向
+5. **📈 特征建模与预后** —— 走通一篇论文的完整方法学
+6. **☢️ 剂量学 / 🫀 配准** —— 按兴趣深入
+7. **🔬 影像实验室** —— 换成你自己的数据
+            """
+        )
+        st.info(
+            "**所有计算都在本地完成**，影像数据不上传任何服务器 —— "
+            "这对将来处理真实临床数据是硬要求。",
+            icon="🔒",
+        )
+
+    st.markdown('<hr class="dku-rule">', unsafe_allow_html=True)
+    st.caption(
+        "仓库：[medical-imaging-notes](https://github.com/maka-baka0806/medical-imaging-notes)　·　"
+        "环境：conda `medimg`（Python 3.11 · PyRadiomics · PyTorch · SimpleITK）　·　"
+        "全部页面通过 AppTest 冒烟测试"
     )
