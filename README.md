@@ -86,7 +86,7 @@
 | 图像处理 | scikit-image / OpenCV | 0.26.0 / — | ✅ |
 | **医学影像 IO** | **SimpleITK / pydicom / nibabel / ITK** | 2.5.6 / 3.0.2 / 5.4.2 / — | ✅ |
 | **放射组学** | **PyRadiomics** | 3.0.1 | ✅ |
-| 深度学习 | PyTorch / torchvision | 2.14.0 / 0.29.0 | ✅ |
+| 深度学习 | PyTorch / torchvision（conda-forge 版） | 2.10.0 / 0.26.0 | ✅ MPS 加速可用 |
 | 交互环境 | JupyterLab | 4.6.4 | ✅ |
 | 3D 影像查看器 | napari | 0.9.1 | ✅ |
 | 阅片/勾画 | 3D Slicer | — | ⬜ 待手动安装 |
@@ -138,6 +138,7 @@ conda env create -f setup/environment.yml   # 在别的机器上重建
 | 2026-09-27 | 创建仓库、配置 SSH 免密推送、整理 177 条术语 | GitHub 直连超时 → **查明是命令行不走系统代理**，加代理后解决 |
 | 2026-09-27 | 装 Miniconda + 建 `medimg` 环境 + 装 14 类科研包 | conda 自动读系统代理 → 访问清华镜像 **403** → 用 `no_proxy` 绕过；**PyRadiomics 无 arm64 预编译包，从源码编译成功** |
 | 2026-09-27 | 跑通第一个示例：合成体模特征提取 107 个 | 网格体积比理论值大 0.74%——体素化导致的正常误差 |
+| 2026-09-27 | 修复 OpenMP 冲突（`import torch` 崩溃） | pip 版 torch 自带 `libomp.dylib`，与 conda 的 libomp 撞车 → **改用 conda-forge 版 PyTorch** 统一运行时 |
 
 ---
 

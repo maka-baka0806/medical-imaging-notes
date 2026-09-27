@@ -33,8 +33,9 @@ itk
 pyradiomics==3.0.1
 
 # ---- 深度学习 ----
-torch==2.14.0
-torchvision==0.29.0
+# ⚠️ 重要：不要用 pip 版 torch！它与 conda 的 libomp 冲突会导致 import 崩溃。
+# 正确做法：conda install -n medimg -c conda-forge pytorch torchvision
+# 本机实际安装：pytorch 2.10.0 / torchvision 0.26.0（conda-forge 版）
 
 # ---- 交互环境与查看器 ----
 jupyterlab==4.6.4

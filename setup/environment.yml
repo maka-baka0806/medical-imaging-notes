@@ -28,13 +28,14 @@ dependencies:
   - simpleitk
   - pydicom
   - nibabel
+  # ---- 深度学习：必须走 conda 渠道 ----
+  # pip 版 torch 自带 libomp.dylib，与 conda 的 llvm-openmp 冲突 → import 直接崩溃
+  - pytorch
+  - torchvision
   - pip
   - pip:
       # ---- 放射组学（PyPI 无 arm64 预编译包，需源码编译）----
       - pyradiomics==3.0.1
-      # ---- 深度学习 ----
-      - torch
-      - torchvision
       # ---- 3D 影像查看器 ----
       - napari[all]
       - itk
