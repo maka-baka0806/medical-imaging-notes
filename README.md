@@ -91,6 +91,33 @@ bash serve.sh status           # 查看状态与地址
 > 全部计算在本机完成，影像数据不上传任何服务器。
 
 
+## 配套项目：论文复现工程
+
+**独立仓库**：[yang-lab-replications](https://github.com/maka-baka0806/yang-lab-replications)
+
+把杨老师 **21 篇论文**的方法学拆成 **141 个可独立执行的步骤**，每篇产出：
+- `papers/` **逐步引导** —— 照着做的操作手册
+- `reports/` **实测报告** —— 带真实数字的结果表 + 与原论文对照
+- `code/repl/` **复现代码** —— 每篇 5–7 个函数，注释对应原文小节
+
+```bash
+cd ~/医学影像学工作/yang-lab-replications
+python code/run.py --list             # 看全部复现
+python code/run.py --id R01 --stdout  # 跑一篇
+python code/run.py --all              # 全部运行 + 生成报告
+```
+
+覆盖范围（21 篇）：体素级放射组学滤波 · SPU-Net 不确定性 · SCNN 球形投影 ·
+MFC 三源融合 · 双放射组学生存分析 · HDR DVH 预测 · PhysMorph 配准 ·
+Neural ODE 轨迹 · 4DCT 时序放射组学 · 数字体模工具箱一致性 ·
+COVID 放射组学增强 · 放射组学嵌入分割 · HDR 剂量图预测 ·
+剂量融入集成学习 · KAN 隐式配准 · 影像基因组学 HBNODE ·
+双滤波剂量组学 · RE-ViT · Swin+小波 CNN · 合成 CT · SCNN 完整训练
+
+另附 `BIBLIOGRAPHY.md`（**66 条**完整文献库）与 `COVERAGE.md`（文献→复现映射矩阵）。
+
+---
+
 ## 学习路线
 
 - **阶段 1（第 1–4 周）**：Python + NumPy + matplotlib + 医学影像 IO（SimpleITK / 3D Slicer）

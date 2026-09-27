@@ -6,7 +6,8 @@ import io
 import pandas as pd
 import streamlit as st
 
-from core.publications import EARLY_PHYSICS, PUBLICATIONS, TOPICS, stats
+from core.publications import (AWARDS, EARLY_PHYSICS, PUBLICATIONS, TOPICS,
+                               stats)
 from core.theme import DUKE_ACCENT, DUKE_BLUE
 
 POS_LABEL = {"": " 第一作者", "": " 通讯/末位（导师位）",
@@ -17,6 +18,7 @@ def _records_to_df(records: list[dict]) -> pd.DataFrame:
     return pd.DataFrame([{
         "年份": r["year"],
         "位次": POS_LABEL.get(r["position"], r["position"]),
+        "类型": r.get("kind", ""),
         "标题": r["title"],
         "期刊": r["journal"],
         "卷期页": r.get("cite", ""),
@@ -34,13 +36,26 @@ def render() -> None:
         "每条都标注了**作者位次**、**核心发现**与**平台对应复现模块**。"
     )
 
+    st.markdown(
+        '<div class="paper"><div class="meta"><span class="tag">配套项目</span></div>'
+        '<h4>可执行复现：yang-lab-replications</h4>'
+        '<p class="goal">本页是文献档案；每一篇的<b>逐步复现代码与实测报告</b>在独立项目中，'
+        '每篇 5–7 个可独立执行的步骤，运行后自动生成报告。</p>'
+        '<div class="diff">仓库：'
+        '<a href="https://github.com/maka-baka0806/yang-lab-replications" target="_blank">'
+        'github.com/maka-baka0806/yang-lab-replications</a>'
+        '　·　本地：<code>~/医学影像学工作/yang-lab-replications</code></div></div>',
+        unsafe_allow_html=True,
+    )
+
     s = stats()
-    c1, c2, c3, c4, c5 = st.columns(5)
-    c1.metric("收录成果", s["总数"])
-    c2.metric("第一作者", s["第一作者"])
-    c3.metric("通讯/末位", s["通讯/末位"])
-    c4.metric("合作者", s["合作者"])
-    c5.metric("平台有复现", s["有复现"])
+    c1, c2, c3, c4, c5, c6 = st.columns(6)
+    c1.metric("收录总数", s["总数"])
+    c2.metric("期刊论文", s["期刊论文"])
+    c3.metric("会议摘要", s["会议摘要"])
+    c4.metric("第一作者", s["第一作者"])
+    c5.metric("通讯/末位", s["通讯/末位"])
+    c6.metric("合作者", s["合作者"])
 
     tab1, tab2, tab3, tab4 = st.tabs(
         [" 全部文献", " 统计与趋势", " 按技术线", " 早期物理研究"])
@@ -54,6 +69,8 @@ def render() -> None:
             pick_pos = st.multiselect("位次", list(POS_LABEL),
                                       default=list(POS_LABEL),
                                       format_func=lambda k: POS_LABEL[k])
+            kinds = sorted({p["kind"] for p in PUBLICATIONS})
+            pick_kinds = st.multiselect("类型", kinds, default=kinds)
             pick_topics = st.multiselect("主题", TOPICS, default=[])
             only_repl = st.checkbox("只看平台已复现的", value=False)
             kw = st.text_input("关键词", placeholder="如：uncertainty、肺、剂量")
@@ -61,6 +78,8 @@ def render() -> None:
         rows = []
         for p in PUBLICATIONS:
             if p["year"] not in pick_years or p["position"] not in pick_pos:
+                continue
+            if p.get("kind") not in pick_kinds:
                 continue
             if pick_topics and not set(pick_topics) & set(p["topic"]):
                 continue
@@ -76,13 +95,15 @@ def render() -> None:
         for p in rows:
             doi_link = (f'　·　<a href="https://doi.org/{p["doi"]}" target="_blank">打开 DOI</a>'
                         if p.get("doi") else "")
-            with st.expander(f"{p['year']}　{POS_LABEL.get(p['position'],'')}　{p['title'][:72]}"):
+            with st.expander(f"{p['year']}　[{p.get('kind','')}]　"
+                             f"{POS_LABEL.get(p['position'],'')}　{p['title'][:64]}"):
                 st.markdown(
                     f"**{p['title']}**\n\n"
                     f"*{p['journal']}*　{p.get('cite','')}　·　第一作者：{p.get('first_author','—')}"
                     f"{doi_link}"
                 )
-                st.markdown(f"**主题**：{'、'.join(p['topic'])}")
+                st.markdown(f"**类型**：{p.get('kind','—')}　｜　"
+                            f"**主题**：{'、'.join(p['topic'])}")
                 st.markdown(f"**核心发现**：{p['finding']}")
                 st.info(f"**平台复现**：{p['replicate']}", icon="")
 
@@ -101,8 +122,12 @@ def render() -> None:
             st.bar_chart(pd.Series(s["按年份"]).sort_index())
         with c2:
             st.markdown("**按作者位次**")
-            pos_counts = {POS_LABEL.get(k, k): v for k, v in s["按位次"].items()}
+            pos_counts = {"★ 第一作者": s["第一作者"], "☆ 通讯/末位": s["通讯/末位"],
+                          "○ 合作者": s["合作者"]}
             st.bar_chart(pd.Series(pos_counts))
+
+        st.markdown("**按文献类型**")
+        st.bar_chart(pd.Series(s["按类型"]))
 
         st.markdown("**按主题分布**")
         st.bar_chart(pd.Series(s["按主题"]).sort_values(ascending=False))
