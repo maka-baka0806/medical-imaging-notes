@@ -2,7 +2,7 @@
 
 医学影像 AI 学习笔记 —— 目标方向：**医学物理 / 放射组学 / 可解释 AI**
 
-[![terms](https://img.shields.io/badge/术语库-约180条-blue)]() [![status](https://img.shields.io/badge/状态-学习中-orange)]()
+[![terms](https://img.shields.io/badge/术语库-177条-blue)]() [![status](https://img.shields.io/badge/状态-学习中-orange)]()
 
 ---
 
@@ -22,10 +22,11 @@
 
 | 文件 | 覆盖范围 | 条数 |
 |---|---|---|
-| [01 · 临床 · 影像 · 放疗](glossary/01-临床-影像-放疗.md) | 肿瘤学基础、CT/MRI/PET/SPECT、放疗与剂量学（DVH、EQD2、SBRT/SRS…） | ~48 |
-| [02 · 放射组学 · 图像处理](glossary/02-放射组学-图像处理.md) | 影像组学特征家族、放射组学滤波、分割与配准（FEM、Jacobian…） | ~34 |
-| [03 · 机器学习 · 统计 · 可解释性](glossary/03-机器学习-统计-可解释性.md) | CNN/U-Net/Transformer、交叉验证与评价指标、XAI 与不确定性量化 | ~53 |
-| [04 · 工程 · 标准 · 代号 · 数据集](glossary/04-工程-标准-代号-数据集.md) | 软件工具链、AAPM 标准体系、方法代号、公开数据集 | ~44 |
+| [01 · 临床 · 影像 · 放疗](glossary/01-临床-影像-放疗.md) | 肿瘤学基础、CT/MRI/PET/SPECT、放疗与剂量学（DVH、EQD2、SBRT/SRS…） | 51 |
+| [02 · 放射组学 · 图像处理](glossary/02-放射组学-图像处理.md) | 影像组学特征家族、放射组学滤波、分割与配准（FEM、Jacobian…） | 34 |
+| [03 · 机器学习 · 统计 · 可解释性](glossary/03-机器学习-统计-可解释性.md) | CNN/U-Net/Transformer、交叉验证与评价指标、XAI 与不确定性量化 | 58 |
+| [04 · 工程 · 标准 · 代号 · 数据集](glossary/04-工程-标准-代号-数据集.md) | 软件工具链、AAPM 标准体系、方法代号、公开数据集 | 34 |
+| | **合计** | **177** |
 
 > 📌 每个文件末尾或正文中都标出了**容易混淆的词**（例如 GLCOM vs GLCM、两个"蒙特卡洛"、Dice vs HD95）。
 
