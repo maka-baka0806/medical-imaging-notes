@@ -100,7 +100,7 @@ def render() -> None:
         st.plotly_chart(fig, width="stretch")
     with c2:
         st.markdown(f"**{METHODS[pick]}**")
-        st.dataframe(pd.DataFrame([{"指标": k, "数值": v} for k, v in ev.items()]),
+        st.dataframe(pd.DataFrame([{"指标": k, "数值": str(v)} for k, v in ev.items()]),
                      hide_index=True, width="stretch")
         st.caption("**det(J) ≤ 0 = 组织自我折叠**，物理上不可能。"
                    "PhysMorph 论文正是用「负 Jacobian 体素比例」来证明"

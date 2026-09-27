@@ -70,7 +70,7 @@ def render() -> None:
         with c1:
             st.markdown("**完整剂量指标表**")
             st.dataframe(pd.DataFrame([
-                {"指标": k, "数值": v} for k, v in m.items()
+                {"指标": k, "数值": str(v)} for k, v in m.items()
             ]), hide_index=True, width="stretch")
         with c2:
             sl = 32

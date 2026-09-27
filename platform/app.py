@@ -19,8 +19,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from core.theme import CSS  # noqa: E402
 from views import (dosimetry_tools, glossary, home, imaging_lab,  # noqa: E402
-                   modeling_survival, phantom_lab, radiomic_filtering,
-                   registration, roadmap, segmentation_uq, toolbox)
+                   modeling_survival, phantom_lab, publications,
+                   radiomic_filtering, registration, replication, roadmap,
+                   segmentation_uq, toolbox)
 
 st.set_page_config(
     page_title="医学影像 AI 学习平台",
@@ -35,6 +36,8 @@ st.markdown(CSS, unsafe_allow_html=True)
 # 否则 Streamlit 会报 "Multiple Pages specified with URL pathname render"
 pages = [
     st.Page(home.render, title="概览", icon="🏠", default=True, url_path="home"),
+    st.Page(replication.render, title="文献复现专栏", icon="🔬", url_path="replication"),
+    st.Page(publications.render, title="文献收藏", icon="📚", url_path="publications"),
     st.Page(radiomic_filtering.render, title="体素级放射组学滤波", icon="🧬",
             url_path="radiomic-filtering"),
     st.Page(segmentation_uq.render, title="分割与不确定性", icon="🎯",
@@ -45,7 +48,7 @@ pages = [
             url_path="dosimetry"),
     st.Page(registration.render, title="形变配准与物理合理性", icon="🫀",
             url_path="registration"),
-    st.Page(glossary.render, title="术语库", icon="📚", url_path="glossary"),
+    st.Page(glossary.render, title="术语库", icon="📖", url_path="glossary"),
     st.Page(imaging_lab.render, title="影像实验室", icon="🔬", url_path="imaging-lab"),
     st.Page(phantom_lab.render, title="体模实验台", icon="🧪", url_path="phantom-lab"),
     st.Page(roadmap.render, title="学习路线", icon="📅", url_path="roadmap"),
@@ -55,9 +58,10 @@ pages = [
 nav = st.navigation(
     {
         "开始": [pages[0]],
-        "复现杨老师的方法": pages[1:6],
-        "基础训练": pages[6:10],
-        "参考": [pages[10]],
+        "杨老师专栏": pages[1:3],
+        "复现他论文的方法": pages[3:8],
+        "基础训练": pages[8:12],
+        "参考": [pages[12]],
     }
 )
 
