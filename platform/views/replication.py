@@ -89,6 +89,50 @@ def _viz(pid: str, st_: dict) -> None:
             axes[1].set_xlabel("D2cc (Gy)"); axes[1].set_ylabel("概率密度")
             axes[1].set_title("KDE 预测分布", fontsize=11); axes[1].legend(fontsize=8)
         fig.tight_layout(); st.pyplot(fig, width="stretch"); plt.close(fig)
+    elif pid == "R8" and "node" in st_:
+        res = st_["node"]
+        X, y = st_["data"]
+        fig, axes = plt.subplots(1, 3, figsize=(15, 4.8))
+        # 输入数据
+        axes[0].scatter(X[y == 0, 0], X[y == 0, 1], s=8, alpha=0.6, color=DUKE_BLUE, label="类 0")
+        axes[0].scatter(X[y == 1, 0], X[y == 1, 1], s=8, alpha=0.6, color=DUKE_ACCENT, label="类 1")
+        axes[0].set_title("输入数据（线性不可分）", fontsize=11); axes[0].legend(fontsize=8)
+        # 轨迹：抽 40 个样本，画出 8 个时间点的位置连线
+        idx = np.r_[np.where(y == 0)[0][:20], np.where(y == 1)[0][:20]]
+        for i in idx:
+            traj = res.trajectories[:, i, :]
+            color = DUKE_BLUE if y[i] == 0 else DUKE_ACCENT
+            axes[1].plot(traj[:, 0], traj[:, 1], color=color, alpha=0.45, lw=0.9)
+        axes[1].scatter(res.trajectories[0, idx, 0], res.trajectories[0, idx, 1],
+                        s=12, color="gray", alpha=0.5, label="t=0")
+        axes[1].scatter(res.trajectories[-1, idx, 0], res.trajectories[-1, idx, 1],
+                        s=12, color="black", alpha=0.6, label="t=1")
+        axes[1].set_title("潜空间轨迹（每个样本一条线）", fontsize=11); axes[1].legend(fontsize=8)
+        # 分离度曲线
+        axes[2].plot(res.times, res.separation, "o-", color=DUKE_BLUE, lw=2)
+        axes[2].set_xlabel("演化时间 t"); axes[2].set_ylabel("两类质心距离")
+        axes[2].set_title("类间分离度随演化单调上升", fontsize=11)
+        fig.tight_layout(); st.pyplot(fig, width="stretch"); plt.close(fig)
+    elif pid == "R9" and "series" in st_:
+        lung, ser = st_["lung"], st_["series"]
+        di, hi, dh, hh = st_["curves"]
+        fig, axes = plt.subplots(1, 3, figsize=(16, 4.6))
+        ph = np.arange(len(lung.phase_names))
+        axes[0].plot(ph, di, "o-", color=DUKE_ACCENT, lw=2, label="缺损区")
+        axes[0].plot(ph, hi, "s-", color=DUKE_BLUE, lw=2, label="健康区")
+        axes[0].set_xticks(ph); axes[0].set_xticklabels(lung.phase_names)
+        axes[0].set_xlabel("呼吸相位"); axes[0].set_ylabel("局部强度 (HU)")
+        axes[0].set_title("核心图：强度随呼吸的变化", fontsize=11); axes[0].legend(fontsize=9)
+        axes[1].plot(ph, dh, "o-", color=DUKE_ACCENT, lw=2, label="缺损区")
+        axes[1].plot(ph, hh, "s-", color=DUKE_BLUE, lw=2, label="健康区")
+        axes[1].set_xticks(ph); axes[1].set_xticklabels(lung.phase_names)
+        axes[1].set_xlabel("呼吸相位"); axes[1].set_ylabel("局部均匀性")
+        axes[1].set_title("均匀性变化", fontsize=11); axes[1].legend(fontsize=9)
+        axes[2].imshow(lung.volume[7, 24], cmap="gray")
+        axes[2].imshow(np.ma.masked_where(~lung.defect[24], lung.defect[24]),
+                       cmap="autumn", alpha=0.45)
+        axes[2].set_title("相位 70%（呼气末）与缺损区", fontsize=11); axes[2].axis("off")
+        fig.tight_layout(); st.pyplot(fig, width="stretch"); plt.close(fig)
     elif pid == "R7" and "reg" in st_:
         case, res = st_["case"], st_["reg"]
         from core.registration import jacobian_determinant
