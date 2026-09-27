@@ -57,6 +57,33 @@
 
 ---
 
+## 🖥️ 本地学习平台（本仓库最大的一块）
+
+把术语库、影像实验室、体模实验台、学习路线、工具链整合成一个**本地网站**：
+
+```bash
+conda activate medimg
+cd ~/医学影像学工作/medical-imaging-notes/platform
+streamlit run app.py        # 或 bash run.sh
+```
+
+浏览器打开 **http://localhost:8501**
+
+| 页面 | 作用 |
+|---|---|
+| 🏠 **概览** | 关键指标、环境自检、学习闭环 |
+| 📚 **术语库** | 177 条术语**可搜索可筛选**，支持导出 CSV |
+| 🔬 **影像实验室** | 载入体模/上传 NIfTI → 阈值分割 → 提取 107 个特征 → 导出 |
+| 🧪 **体模实验台** | 拖滑杆实时看特征变化；**参数敏感性扫描**出排行榜与曲线 |
+| 🎯 **学习路线** | 12 周清单，进度存本地 |
+| 🧰 **工具与资源** | 环境状态、启动命令、网络备忘、文献链接 |
+
+> **所有计算都在本地完成，影像数据不上传任何服务器** —— 这对将来处理真实临床数据很重要。
+>
+> 代码见 [`platform/`](platform/)，说明见 [platform/README.md](platform/README.md)。
+
+---
+
 ## 学习路线
 
 - **阶段 1（第 1–4 周）**：Python + NumPy + matplotlib + 医学影像 IO（SimpleITK / 3D Slicer）
@@ -139,6 +166,7 @@ conda env create -f setup/environment.yml   # 在别的机器上重建
 | 2026-09-27 | 装 Miniconda + 建 `medimg` 环境 + 装 14 类科研包 | conda 自动读系统代理 → 访问清华镜像 **403** → 用 `no_proxy` 绕过；**PyRadiomics 无 arm64 预编译包，从源码编译成功** |
 | 2026-09-27 | 跑通第一个示例：合成体模特征提取 107 个 | 网格体积比理论值大 0.74%——体素化导致的正常误差 |
 | 2026-09-27 | 修复 OpenMP 冲突（`import torch` 崩溃） | pip 版 torch 自带 `libomp.dylib`，与 conda 的 libomp 撞车 → **改用 conda-forge 版 PyTorch** 统一运行时 |
+| 2026-09-27 | 搭建本地学习平台（6 个页面的 Streamlit 网站） | 踩到 matplotlib 中文缺字（换 Arial Unicode MS 解决）与 Streamlit `use_container_width` 弃用 |
 
 ---
 
@@ -159,6 +187,10 @@ medical-imaging-notes/
 │   ├── 02-放射组学-图像处理.md
 │   ├── 03-机器学习-统计-可解释性.md
 │   └── 04-工程-标准-代号-数据集.md
+├── platform/                 # 🖥️ 本地学习平台（Streamlit 网站）
+│   ├── app.py                #    入口
+│   ├── views/                #    六个页面
+│   └── core/                 #    术语解析 / 体模计算 / 环境自检
 ├── examples/                 # 可运行示例
 │   └── 01_radiomics_demo.py
 ├── setup/                    # 环境配置
