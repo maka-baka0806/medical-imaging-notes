@@ -1,0 +1,54 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ---- 虚拟环境 ----
+.venv/
+venv/
+env/
+ENV/
+
+# ---- Jupyter ----
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ---- 数据（大文件不要进仓库）----
+data/
+*.dcm
+*.nii
+*.nii.gz
+*.nrrd
+*.mha
+*.mhd
+*.dcm.zip
+
+# ---- 模型权重 ----
+*.pth
+*.pt
+*.ckpt
+*.h5
+*.onnx
+checkpoints/
+runs/
+
+# ---- 系统与编辑器 ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+# ---- 缓存 ----
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
